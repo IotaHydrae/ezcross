@@ -1,0 +1,38 @@
+#include "widget.h"
+#include "ui_widget.h"
+
+Widget::Widget(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::Widget)
+{
+    ui->setupUi(this);
+}
+
+Widget::~Widget()
+{
+    delete ui;
+}
+static uint8_t check_host_if_correct(QString host)
+{
+    char buf[10];
+    /* Type C IP address, ez check here*/
+    QStringList list = host.split(".");
+//    snprintf(buf, sizeof(buf), "%d", list.count());
+//    QMessageLogger().debug((qPrintable(buf)));
+    if(list.count()!=4)return -1;
+
+    foreach (QString byte, list) {
+        snprintf(buf, sizeof(buf), "%d", byte.toInt());
+        QMessageLogger().debug((qPrintable(buf)));
+        if(byte.toInt() > 0xff)return -1;
+    }
+    return 1;
+}
+void Widget::on_Button_connect_clicked()
+{
+    QString host =  ui->lineEdit_host->text();
+    if(check_host_if_correct(host)){
+        QMessageLogger().debug((qPrintable("Host check ok.")));
+    }
+
+}
